@@ -1,0 +1,8 @@
+# Ignore pycache files
+__pycache__/*
+# Ignore emacs autosave files
+*~
+# Ignore configparser files
+.#*
+# Ignore actual config file
+config.ini

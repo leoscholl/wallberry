@@ -1,0 +1,45 @@
+<div class="row" id="currently">
+  <h1 class="current-temperature col-lg-6 col-xl-4">
+    {{ '%d' % currently.temperature -}}
+        <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
+  </h1>
+  <div class="currently current-icon col-lg-4 col-xl-3">
+    <img class="currently" src="{{ url_for('static', filename=currently.icon+'.png') }}"
+       alt="{{ currently.icon }}"/>
+  </div>
+  <div class="currently current-description col-lg-12 col-xl-5">
+    {{ currently.summary }} 
+    {% for t in temperature %}
+      {{'%s: %0.1f' % (t, temperature[t]) -}}
+      <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small> 
+    {% endfor %}
+    {{ daily.summary }}
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-8 col-xl-5" id="hourly">
+    {% for f in hourly %}
+    <div class="row datapoint">
+      <div class="hourly icon col-lg-4 col-xl-4">
+	      <img class="hourly" src="{{ url_for('static', filename=f.icon+'.png') }}"
+	        alt="{{ f.icon }}" height="100" width="100"/>
+      </div>
+      <div class="col-lg-6 col-xl-6">
+	      <span class="hourly hourly-time">
+          {{ (f.time + offset).strftime('%-I:%M%p').lower() }}
+        </span>
+        <br/>
+        <span class="hourly hourly-description text-muted">
+          {{ f.summary }}
+        </span>
+      </div>
+      {% if f.temperature %}
+      <h2 class="hourly-temperature col-lg-2 col-xl-2">
+	      {{ '%d' % f.temperature -}}
+        <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
+      </h2>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
