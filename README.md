@@ -16,7 +16,7 @@ A simple, extensible web server for fetching weather and other information and d
 ## Setup
 
 Requires a DarkSky API key (free from https://darksky.net/dev). 
-Set up the config file to include your key and your location. Add addresses of any DS18B20 sensors attached through w1-gpio.
+Set up the config file to include your key and your location. Add addresses of any DS18B20 sensors attached through w1-gpio. Save config file as `config.ini`
 
 Connect the temperature sensor:
 
@@ -27,16 +27,19 @@ Set up the 1 wire gpio:
 
 to `/boot/config.txt` add:
 
-```dtoverlay=w1-gpio,gpiopin=4``` 4 is the default w1 gpio pin anyway
-```dtoverlay=w1-gpio,gpiopin=4,pullup=1``` if using parasitic mode (two wires)
+* ```dtoverlay=w1-gpio,gpiopin=4``` 4 is the default w1 gpio pin
+* ```dtoverlay=w1-gpio,gpiopin=4,pullup=1``` if using parasitic mode (two wires)
 
 to `/etc/modules` add:
 
+* 
 ```w1-gpio
-w1-therm```
-or
+w1-therm
+```
+* 
 ```w1-gpio
-w1-therm strong_pullup=2```
+w1-therm strong_pullup=2
+```
 if using parasitic mode
 
 ## Usage
