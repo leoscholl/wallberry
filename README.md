@@ -32,11 +32,12 @@ to `/boot/config.txt` add:
 
 to `/etc/modules` add:
 
-* 
 ```w1-gpio
 w1-therm
 ```
-* 
+
+or
+ 
 ```w1-gpio
 w1-therm strong_pullup=2
 ```
