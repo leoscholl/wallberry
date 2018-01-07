@@ -8,10 +8,10 @@ app = Flask(__name__)
 configLoc = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
 config = configparser.ConfigParser()
 config.optionxform = str
-config.read(configLocation)
+config.read(configLoc)
 
-if not isempty(config['Sensors']):
-    from w1thermsensor import W1TermSensor
+if config['Sensors']:
+    from w1thermsensor import W1ThermSensor
 
 @app.after_request
 def add_header(response):
