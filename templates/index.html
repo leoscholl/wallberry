@@ -8,7 +8,22 @@
     <link rel="stylesheet" type="text/css" href="temp/style.css">
     <script type="text/javascript">
       function update_weather(){
-        $('#weather-forecast').load('weather');
+
+        $('#currently').load('currently');
+        $('#daily-list').load('daily');
+        
+        $.getJSON('precipitation', function(data){
+          if (data > 0.01) {
+            var w = $(window).width();
+            $('#hourly-graph').attr('src', 'hourly?type=graph&w=' + w + '&t=' + Math.random());
+            $('#daily-list').load('daily');
+          } else {
+            $('#hourly-graph').attr('src', 'static/blank.png');
+            $('#hourly-list').load('hourly?type=list');
+          }
+        });
+
+        
       }
       function update_clock(){
         $('#clock').html(moment().format(
@@ -18,8 +33,8 @@
       $(document).ready(function(){
         setInterval("update_weather();", 1000 * 60 * 30);
         setInterval("update_clock();", 1000 * 60);
-        update_weather();
         update_clock();
+        update_weather();
       });
       
     </script>
@@ -27,10 +42,15 @@
   <body>
     <div class="container-fluid fill bg">
       <div class="row">
-        <div id="weather-forecast" class="col-lg-6 col-xl-8">
-          Loading forecast...
-        </div>
+        <div id="currently" class="col-lg-6 col-xl-8"></div>
         <div id="clock" class="col-lg-6 col-xl-4"></div>
+      </div>
+      <div class="row">
+        <img id="hourly-graph" src="" class="col-12"/>
+        <div id="hourly-list" class="col-lg-5 col-xl-6"></div>
+      </div>
+      <div class="row">
+        <div id="daily-list" class="col-lg-5 col-xl-6"></div>
       </div>
     </div>
   </body>

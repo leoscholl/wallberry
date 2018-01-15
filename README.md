@@ -2,11 +2,12 @@
 
 A simple, extensible web server for fetching weather and other information and displaying nicely on a screen.
 
-## Built with
+## Dependencies
 
 * w1thermsensor
 * forecastio
 * python-flask
+* matplotlib
 
 ## Hardware
 
@@ -32,13 +33,15 @@ to `/boot/config.txt` add:
 
 to `/etc/modules` add:
 
-```w1-gpio
+```
+w1-gpio
 w1-therm
 ```
 
 or
  
-```w1-gpio
+```
+w1-gpio
 w1-therm strong_pullup=2
 ```
 if using parasitic mode
