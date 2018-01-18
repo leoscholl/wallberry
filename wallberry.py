@@ -42,7 +42,7 @@ def updateForecast():
     offset = timedelta(hours=forecast.offset())
     if forecast.currently().time + offset < \
         datetime.now() - timedelta(minutes=int(config['API']['updateFreq'])):
-        disp('Updating forecast from DarkSky...')
+        print('Updating forecast from DarkSky...')
         forecast.update()
 
 def read_sensors(temperature):
