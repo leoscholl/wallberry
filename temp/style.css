@@ -12,11 +12,6 @@ body {
     overflow: hidden;
 }
 
-.fill {
-    min-height: 100%;
-    height: 100%;
-}
-
 .currently {
     font-size: 25pt;
 }
@@ -69,5 +64,7 @@ img.datapoint {
     margin-top: 20px;
 }
 
-
+#middle {
+    overflow: hidden;
+}
 

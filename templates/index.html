@@ -13,16 +13,16 @@
         $('#daily-list').load('daily');
         
         $.getJSON('precipitation', function(data){
-          if (data > 0.01) {
+          if (data > {{- precipThreshold -}}) {
             var w = $(window).width();
             $('#hourly-graph').attr('src', 'hourly?type=graph&w=' + w + '&t=' + Math.random());
-            $('#daily-list').load('daily');
+            $('#hourly-list').html('');
           } else {
             $('#hourly-graph').attr('src', 'static/blank.png');
             $('#hourly-list').load('hourly?type=list');
           }
-        });
 
+        });
         
       }
       function update_clock(){
@@ -40,16 +40,16 @@
     </script>
   </head>
   <body>
-    <div class="container-fluid fill bg">
-      <div class="row">
+    <div class="container-fluid">
+      <div class="row" id="top">
         <div id="currently" class="col-lg-6 col-xl-8"></div>
         <div id="clock" class="col-lg-6 col-xl-4"></div>
       </div>
-      <div class="row">
+      <div class="row" id="middle">
         <img id="hourly-graph" src="" class="col-12"/>
         <div id="hourly-list" class="col-lg-5 col-xl-6"></div>
       </div>
-      <div class="row">
+      <div class="row" id="bottom">
         <div id="daily-list" class="col-lg-5 col-xl-6"></div>
       </div>
     </div>

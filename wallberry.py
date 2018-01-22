@@ -26,7 +26,7 @@ if config['Sensors']:
     from w1thermsensor import W1ThermSensor
 
 forecast = forecastio.load_forecast(
-    config['API']['apiKey'], 
+    config['API']['api-key'], 
     config['Location']['lat'], 
     config['Location']['lon'],
     units=config['API']['units'])
@@ -41,7 +41,7 @@ def dispUnit(measurement):
 def updateForecast():
     offset = timedelta(hours=forecast.offset())
     if forecast.currently().time + offset < \
-        datetime.now() - timedelta(minutes=int(config['API']['updateFreq'])):
+        datetime.now() - timedelta(minutes=int(config['API']['update-freq'])):
         print('Updating forecast from DarkSky...')
         forecast.update()
 
@@ -66,13 +66,16 @@ def send_css(path):
 
 @app.route('/')
 def wall_clock():
-    return send_from_directory('templates', 'index.html')
+    return render_template('index.html',
+        precipThreshold=float(config['Display']['graph-rain-threshold']))
 
 @app.route('/precipitation')
 def precipChance():
     updateForecast()
     offset = timedelta(hours=forecast.offset()) 
-    end = datetime.now() + timedelta(hours=int(config['Display']['hours']))
+    hours = max(int(config['Display']['hours-graph']),
+        int(config['Display']['hours-list']))
+    end = datetime.now() + timedelta(hours=hours)
     maxPrecipProb = 0
     hour = 0
     hf = forecast.hourly().data[hour]
@@ -108,15 +111,14 @@ def currently():
 @app.route('/hourly')
 def hourly():
     updateForecast()
-
     start = datetime.now()
-    end = datetime.now() + timedelta(hours=int(config['Display']['hours']))
-
     fType = request.args['type']
     if fType == 'graph':
         width = int(request.args['w'])
+        end = start + timedelta(hours=int(config['Display']['hours-graph']))
         return hourly_graph(start, end, width)
     elif fType == 'list':
+        end = start + timedelta(hours=int(config['Display']['hours-list']))
         return hourly_list(start, end)
     else:
         return 'Error'
@@ -187,7 +189,7 @@ def hourly_graph(start, end, width):
     paxis.set_xlim([start.replace(minute=0), end.replace(minute=0)])
 
     xticks = [start.replace(minute=0) + timedelta(hours=x) \
-        for x in range(0, int(config['Display']['hours']) + 1, 2)]
+        for x in range(0, int(config['Display']['hours-graph']) + 1, 2)]
     paxis.set_xticks(xticks)
 
     for ymaj in taxis.yaxis.get_majorticklocs():
