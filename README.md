@@ -2,6 +2,8 @@
 
 A simple, extensible web server for fetching weather and other information and displaying nicely on a screen.
 
+![example image](https://github.com/leoscholl/wallberry/blob/master/2018-06-26-155531_1050x1680_scrot.png)
+
 ## Dependencies
 
 * w1thermsensor
