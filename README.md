@@ -18,47 +18,64 @@ A simple, extensible web server for fetching weather and other information and d
 
 ## Setup
 
+Install:
+
+```
+git clone https://github.com/leoscholl/wallberry
+sudo apt-get install python3-flask python3-matplotlib python3-w1thermsensor
+sudo pip3 install python-forecastio
+```
+
 Requires a DarkSky API key (free from https://darksky.net/dev). 
-Set up the config file to include your key and your location. Add addresses of any DS18B20 sensors attached through w1-gpio. Save config file as `config.ini`
+Change the example config file to include your key and your location. Add addresses of any DS18B20 sensors attached through w1-gpio. Save config file as `config.ini`
 
-Connect the temperature sensor:
+If you have temperature sensors, you can set them up in one of two ways:
 
-* normal mode (Vdd to 3.3v, data to gpio-4, ground to ground, pullup resistor between Vdd and data)
-* parasitic mode (Vdd shorted with ground, data to gpio-4, pullup resistor between Vdd and data)
-
-Set up the 1 wire gpio:
+#### Normal mode:
+Connect Vdd to 3.3v, data to gpio-4, ground to ground, pullup resistor between Vdd and data
 
 to `/boot/config.txt` add:
-
-* ```dtoverlay=w1-gpio,gpiopin=4``` 4 is the default w1 gpio pin
-* ```dtoverlay=w1-gpio,gpiopin=4,pullup=1``` if using parasitic mode (two wires)
-
+```
+dtoverlay=w1-gpio,gpiopin=4
+``` 
+4 is the default w1 gpio pin
+ 
 to `/etc/modules` add:
-
 ```
 w1-gpio
 w1-therm
 ```
 
-or
+#### Parasitic mode:
+Connect Vdd shorted with ground, data to gpio-4, pullup resistor between Vdd and data
+
+to `/boot/config.txt` add:
+```
+dtoverlay=w1-gpio,gpiopin=4,pullup=1
+``` 
  
+to `/etc/modules` add:
 ```
 w1-gpio
 w1-therm strong_pullup=2
 ```
-if using parasitic mode
 
 ## Usage
 
-Start the server on your local network by running `python wallberry.py &`
+Start the server on your local network by running `python3 wallberry/wallberry.py &`
 Open a web browser and navigate to `localhost:5000`
 
-For a wall-clock, use crontab to automatically start on boot
+For a wall-clock, use crontab and screen to automatically start on boot
 
 ```
-@reboot /usr/bin/screen -dmS Clock /usr/bin/python3 /path/to/wallberry/wallberry.py
-@reboot /bin/sh /path/to/wallberry/start.sh
-0 7 * * * tvservice -p
-0 23 * * * tvservice -o
+sudo apt-get install screen
+crontab -e
 ```
-will start a full-screen kiosk browser, and turn off the screen automatically from 11pm to 7am.
+add the following:
+```
+@reboot /usr/bin/screen -dmS Clock /usr/bin/python3 /path/to/wallberry/wallberry.py
+@reboot /bin/sh ~/wallberry/start.sh
+0 7 * * * /bin/sh ~/wallberry/stop.sh
+0 23 * * * /bin/sh ~/wallberry/start.sh
+```
+This will start a full-screen kiosk browser, and turn off the screen automatically from 11pm to 7am.
