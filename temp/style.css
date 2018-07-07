@@ -16,55 +16,92 @@ body {
     font-size: 25pt;
 }
 
+.current-temperature {
+    font-size: 100pt;
+    display: inline;
+}
+
 img.currently {
-    height: 130px;
-    width: 130px;
-    margin: 10px;
+    width: 150px;
+    height: 150px;
+    vertical-align: top;
+    margin-top: 20px;
+}
+
+
+.row.hourly {
+    margin-top: -10px;
 }
 
 img.datapoint {
-    height: 60px;
     width: 60px;
+    height: 60px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 .datapoint-time {
     font-size: 20pt;
-}
-
-.hourly .datapoint-temperature, .hourly .datapoint-precip {
-    font-size: 40pt;
-}
-
-.daily .datapoint-temperature, .daily .datapoint-precip {
-    font-size: 20pt;
-}
-
-.datapoint-precip {
-    color: #4082f2;
+    margin-top: 10px;
 }
 
 .datapoint-description {
     font-size: 15pt;
 }
 
-.current-temperature {
-    font-size: 100pt;
+.hourly .datapoint-temperature {
+    font-size: 40pt;
+    position: absolute;
+    margin-left: 300px;
+    margin-top: 10px;
+}
+
+.hourly .datapoint-precip {
+    font-size: 40pt;
+    color: #4082f2;
+    position: absolute;
+    margin-left: 420px;
+    margin-top: 10px;
+}
+
+.daily .datapoint-temperature {
+    font-size: 20pt;
+    position: absolute;
+    margin-left: 430px;
+    margin-top: 10px;
+}
+
+.daily .datapoint-precip {
+    font-size: 20pt;
+    color: #4082f2;
+    position: absolute;
+    margin-left: 520px;
+    margin-top: 10px;
+}
+
+.daily h2 {
+    margin-top: 30px;
+}
+
+#top {
+    margin-top: -10px;
 }
 
 #time {
     font-size: 85pt;
-    height: 140px;
+    height: 120px;
 }
 
 #date {
     font-size: 25pt;
 }
 
-#hourly-list, #daily-list {
+#alerts {
     margin-top: 20px;
 }
 
-#middle {
-    overflow: hidden;
+#hourly-list, #daily-list {
+    margin-top: 20px;
 }
 

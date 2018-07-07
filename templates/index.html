@@ -10,6 +10,7 @@
       function update_weather(){
 
         $('#currently').load('currently');
+        $('#alerts').load('alerts');
         $('#daily-list').load('daily');
         
         $.getJSON('precipitation', function(data){
@@ -27,11 +28,11 @@
       }
       function update_clock(){
         $('#clock').html(moment().format(
-          '[<div id="time" class="text-right">]h:mma[</div>'+
+          '[<h1 id="time" class="text-right">]h:mma[</h1>'+
           '<div id="date" class="text-right">]dddd, MMM Do[</div>]'));
       }
       $(document).ready(function(){
-        setInterval("update_weather();", 1000 * 60 * 30);
+        setInterval("update_weather();", 1000 * 60 *  {{- updateFreq -}});
         setInterval("update_clock();", 1000 * 60);
         update_clock();
         update_weather();
@@ -42,15 +43,27 @@
   <body>
     <div class="container-fluid">
       <div class="row" id="top">
-        <div id="currently" class="col-lg-6 col-xl-8"></div>
-        <div id="clock" class="col-lg-6 col-xl-4"></div>
+        <div id="left" class="col-5 col-lg-6 col-xl-7">
+          <div class="row">
+            <div id="currently" class="col-12"></div>
+          </div>
+          <div class="row">
+            <div id="hourly-list" class="col-10 col-lg-9 col-xl-8"></div>
+          </div>
+        </div>
+        <div id="right" class="col-7 col-lg-6 col-xl-5">
+          <div class="row">
+            <div id="clock" class="col-12"></div>
+            <br/>
+            <div id="alerts" class="col-10 col-xl-8 offset-2 offset-xl-4"></div>
+          </div>
+        </div>
       </div>
       <div class="row" id="middle">
         <img id="hourly-graph" src="" class="col-12"/>
-        <div id="hourly-list" class="col-lg-5 col-xl-6"></div>
       </div>
       <div class="row" id="bottom">
-        <div id="daily-list" class="col-lg-5 col-xl-6"></div>
+        <div id="daily-list" class="col-5 col-xl-6"></div>
       </div>
     </div>
   </body>

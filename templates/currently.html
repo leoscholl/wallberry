@@ -1,18 +1,16 @@
-<div class="row">
-  <h1 class="current-temperature col-lg-6 col-xl-4">
+  <h1 class="current-temperature">
     {{ '%d' % currently.temperature -}}
     <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
   </h1>
-  <div class="currently current-icon col-lg-4 col-xl-3">
-    <img class="currently" src="{{ url_for('static', filename=currently.icon+'.png') }}"
-       alt="{{ currently.icon }}"/>
-  </div>
-  <div class="currently current-description col-lg-12 col-xl-5">
+  <img class="currently" 
+    src="{{ url_for('static', filename=currently.icon+'.png') }}"
+    alt="{{ currently.icon }}"/>
+  <div class="currently current-description">
     {{ currently.summary }} 
     {% for t in temperature %}
       {{'%s: %0.1f' % (t, temperature[t]) -}}
       <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small> 
     {% endfor %}   
-  {{ daily.summary }}
+    {{ daily.summary }}
   </div>
-</div>
+

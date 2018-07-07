@@ -1,0 +1,11 @@
+{% for a in alerts %}
+  {% if a.severity and a.severity == "advisory" %}
+  <div class="alert alert-secondary" role="alert">
+  {% elif a.severity and a.severity == "watch" %}
+  <div class="alert alert-warning" role="alert">
+  {% elif a.severity and a.severity == "warning" %}
+  <div class="alert alert-danger" role="alert">
+  {% endif %}
+  {{ a.title }}
+  </div>
+{% endfor %}

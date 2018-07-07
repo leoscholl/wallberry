@@ -1,27 +1,22 @@
 {% for f in data %}
 <div class="row daily">
-  <div class="datapoint icon col-2">
-   <img class="datapoint" src="{{ url_for('static', filename=f.icon+'.png') }}"
-     alt="{{ f.icon }}" height="100" width="100"/>
-  </div>
-  <div class="col-8">
-    <span class="datapoint datapoint-time">
+  <img class="datapoint" src="{{ url_for('static', filename=f.icon+'.png') }}"
+     alt="{{ f.icon }}"/>
+  <div>
+    <div class="datapoint-time">
       {{ (f.time + offset).strftime('%A') }}
-    </span>
-    <br/>
-    <span class="datapoint datapoint-description text-muted">
+    </div>
+    <div class="datapoint-description text-muted">
       {{ f.summary }}
-    </span>
+    </div>
   </div>
-  <div class="col-2">
-    <span class="datapoint-temperature">
-     {{ '%d/%d' % (f.temperatureHigh, f.temperatureLow) -}}
-      <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
-    </h2>
-    <h2 class="datapoint-precip col-2">
-     {{ '%d%%' % (f.precipProbability * 100) -}}
-    </h2>
-  </div>
+  <h2 class="datapoint-temperature">
+    {{ '%d/%d' % (f.temperatureHigh, f.temperatureLow) -}}
+    <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
+  </h2>
+  <h2 class="datapoint-precip col-2">
+    {{ '%d%%' % (f.precipProbability * 100) -}}
+  </h2>
 </div>
 {% endfor %}
 

@@ -67,7 +67,8 @@ def send_css(path):
 @app.route('/')
 def wall_clock():
     return render_template('index.html',
-        precipThreshold=float(config['Display']['graph-rain-threshold']))
+        precipThreshold=float(config['Display']['graph-rain-threshold']),
+	updateFreq=int(config['Display']['display-freq']))
 
 @app.route('/precipitation')
 def precipChance():
@@ -108,16 +109,24 @@ def currently():
         daily=daily,
         unit=dispUnit('temperature'))
 
+@app.route('/alerts')
+def alerts():
+    updateForecast()
+    alerts = forecast.alerts()
+    return render_template('alerts.html',
+        alerts=alerts)
+
 @app.route('/hourly')
 def hourly():
     updateForecast()
-    start = datetime.now()
     fType = request.args['type']
     if fType == 'graph':
         width = int(request.args['w'])
+        start = datetime.now() - timedelta(hours=2)
         end = start + timedelta(hours=int(config['Display']['hours-graph']))
         return hourly_graph(start, end, width)
     elif fType == 'list':
+        start = datetime.now()
         end = start + timedelta(hours=int(config['Display']['hours-list']))
         return hourly_list(start, end)
     else:
@@ -175,7 +184,7 @@ def hourly_graph(start, end, width):
     paxis = taxis.twinx()
     fg2 = '#4082f2'
     paxis.plot(time, precip, color=fg2)
-    paxis.set_ylabel('Precipitation %', color=fg2)
+    paxis.set_ylabel('Chance (%)', color=fg2)
     paxis.xaxis.set_tick_params(color=fg2, labelcolor=fg2)
     paxis.yaxis.set_tick_params(color=fg2, labelcolor=fg2)
 
@@ -191,6 +200,9 @@ def hourly_graph(start, end, width):
     xticks = [start.replace(minute=0) + timedelta(hours=x) \
         for x in range(0, int(config['Display']['hours-graph']) + 1, 2)]
     paxis.set_xticks(xticks)
+
+    yticks = range(0, 101, 25)
+    paxis.set_yticks(yticks)
 
     for ymaj in taxis.yaxis.get_majorticklocs():
         taxis.axhline(y=ymaj, ls='-', color='#555555', lw=0.5)
