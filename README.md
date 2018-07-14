@@ -68,7 +68,6 @@ Open a web browser and navigate to `localhost:5000`
 For a wall-clock, use crontab and screen to automatically start on boot
 
 ```
-sudo apt-get install chromium
 sudo apt-get install screen
 crontab -e
 ```
