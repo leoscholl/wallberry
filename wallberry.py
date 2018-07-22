@@ -22,14 +22,10 @@ defaults.update({'font.size':16,
     'axes.linewidth':2,
     'lines.linewidth':3})
 
+forecast = None
+sensors = {}
 if config['Sensors']:
-    from w1thermsensor import W1ThermSensor
-
-forecast = forecastio.load_forecast(
-    config['API']['api-key'], 
-    config['Location']['lat'], 
-    config['Location']['lon'],
-    units=config['API']['units'])
+    from w1thermsensor import W1ThermSensor        
 
 def dispUnit(measurement):
     if measurement == 'temperature':
@@ -39,30 +35,30 @@ def dispUnit(measurement):
             return u'\u00b0' + 'C' 
 
 def updateForecast():
-    offset = timedelta(hours=forecast.offset())
-    if forecast.currently().time + offset < \
-        datetime.now() - timedelta(minutes=int(config['API']['update-freq'])):
+    global forecast
+    if forecast == None or (forecast.currently().time + timedelta(hours=forecast.offset()) < \
+        datetime.now() - timedelta(minutes=int(config['API']['update-freq']))):
         print('Updating forecast from DarkSky...')
-        forecast.update()
+        forecast = forecastio.load_forecast(
+            config['API']['api-key'], 
+            config['Location']['lat'], 
+            config['Location']['lon'],
+            units=config['API']['units'])
 
-def read_sensors(temperature):
+def read_sensors():
+    # Remove any old sensor readings
+    global sensors
+    for s in sensors:
+        if 'time' in sensors[s] and sensors[s]['time'] < \
+            datetime.now() - timedelta(minutes=int(config['API']['update-freq'])):
+            sensors.pop(s, None)
     for hwid in config['Sensors']:
         sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 
             config['Sensors'][hwid])
         if config['API']['units'] == 'us':
-            temperature[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
         else:
-            temperature[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
-    return temperature
-
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 0
-    return response
-
-@app.route('/temp/<path:path>')
-def send_css(path):
-    return send_from_directory('temp', path)
+            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
 
 @app.route('/')
 def wall_clock():
@@ -87,11 +83,20 @@ def precipChance():
         hf = forecast.hourly().data[hour]
     return jsonify(maxPrecipProb)
 
+@app.route('/log', methods=['POST'])
+def log_temperature():
+    name = request.form['name']
+    sensors[name] = {}
+    sensors[name]['time'] = datetime.now()
+    sensors[name]['temperature'] = float(request.form['temperature'])
+    if 'humidity' in request.form:
+        sensors[name]['humidity'] = float(request.form['humidity'])
+    return 'ok\r\n'
+
 @app.route('/currently')
 def currently():
-    temperature = {}
     if config['Sensors']:
-        read_sensors(temperature)
+        read_sensors()
     updateForecast()
 
     currently = forecast.currently()
@@ -103,7 +108,7 @@ def currently():
     else:
         daily = forecast.daily().data[0]
     return render_template('currently.html',
-        temperature=temperature,
+        sensors=sensors,
         alerts=forecast.alerts(),
         currently=currently,
         daily=daily,
