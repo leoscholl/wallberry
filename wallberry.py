@@ -55,10 +55,11 @@ def read_sensors():
     for hwid in config['Sensors']:
         sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 
             config['Sensors'][hwid])
+        sensors[hwid] = {}
         if config['API']['units'] == 'us':
-            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+            sensors[hwid]['temperature'] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
         else:
-            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
+            sensors[hwid]['temperature'] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
 
 @app.route('/')
 def wall_clock():
