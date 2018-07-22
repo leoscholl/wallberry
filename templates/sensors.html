@@ -1,0 +1,14 @@
+<dl class="row sensors text-right">
+  {% for s in sensors %}
+    <dt class="col-8">{{- s -}}:</dt>
+    <dd class="col-4">{{'%d' % sensors[s]['temperature'] -}}
+      <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small> 
+    </dd>
+    {% if sensors[s]['humidity'] %}
+    <dt class="col-8">Humidity:</dt>
+    <dd class="col-4">{{ '%d' % sensors[s]['humidity'] -}}
+      <small class="text-muted align-text-top degrees">%</small>
+    </dd>
+    {% endif %}
+  {% endfor %}   
+</dl>

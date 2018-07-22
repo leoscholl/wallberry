@@ -12,6 +12,10 @@ body {
     overflow: hidden;
 }
 
+small {
+    line-height: 1.2;
+}
+
 .currently {
     font-size: 25pt;
 }
@@ -22,12 +26,27 @@ body {
 }
 
 img.currently {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     vertical-align: top;
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
+.sensors dt {
+    font-size: 25pt;
+    font-weight: normal;
+    padding-top: 8px;
+    padding-right: 0px;
+    margin-left: 10px;
+    margin-bottom: -10px;
+}
+
+.sensors dd {
+    font-size: 40pt;
+    padding-left: 0px;
+    margin-left: -10px;
+    margin-bottom: -10px;
+}
 
 .row.hourly {
     margin-top: -10px;
@@ -38,7 +57,11 @@ img.datapoint {
     height: 60px;
     margin-left: 10px;
     margin-right: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
+}
+
+.hourly .datapoint-info {
+    max-width: 210px;
 }
 
 .datapoint-time {
@@ -63,6 +86,10 @@ img.datapoint {
     position: absolute;
     margin-left: 420px;
     margin-top: 10px;
+}
+
+.daily .datapoint-info {
+    max-width: 350px;
 }
 
 .daily .datapoint-temperature {

@@ -55,10 +55,11 @@ def read_sensors():
     for hwid in config['Sensors']:
         sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 
             config['Sensors'][hwid])
+        sensors[hwid] = {}
         if config['API']['units'] == 'us':
-            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+            sensors[hwid]['temperature'] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
         else:
-            sensors[hwid] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
+            sensors[hwid]['temperature'] = sensor.get_temperature(W1ThermSensor.DEGREES_C)
 
 @app.route('/')
 def wall_clock():
@@ -95,10 +96,7 @@ def log_temperature():
 
 @app.route('/currently')
 def currently():
-    if config['Sensors']:
-        read_sensors()
     updateForecast()
-
     currently = forecast.currently()
     currently.summary = 'Currently ' + currently.summary.lower() + '.'
     now = datetime.now()
@@ -108,7 +106,6 @@ def currently():
     else:
         daily = forecast.daily().data[0]
     return render_template('currently.html',
-        sensors=sensors,
         alerts=forecast.alerts(),
         currently=currently,
         daily=daily,
@@ -121,6 +118,14 @@ def alerts():
     return render_template('alerts.html',
         alerts=alerts)
 
+@app.route('/sensors')
+def sensorList():
+    global sensors
+    if config['Sensors']:
+        read_sensors()
+    return render_template('sensors.html',
+        sensors=sensors, unit=dispUnit('temperature'))
+
 @app.route('/hourly')
 def hourly():
     updateForecast()
@@ -132,7 +137,8 @@ def hourly():
         return hourly_graph(start, end, width)
     elif fType == 'list':
         start = datetime.now()
-        end = start + timedelta(hours=int(config['Display']['hours-list']))
+        h = 69
+        end = start + timedelta(hours=int(request.args['h'])/h-1)
         return hourly_list(start, end)
     else:
         return 'Error'

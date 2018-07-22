@@ -2,7 +2,7 @@
 <div class="row daily">
   <img class="datapoint" src="{{ url_for('static', filename=f.icon+'.png') }}"
      alt="{{ f.icon }}"/>
-  <div>
+  <div class="datapoint-info">
     <div class="datapoint-time">
       {{ (f.time + offset).strftime('%A') }}
     </div>
@@ -14,9 +14,11 @@
     {{ '%d/%d' % (f.temperatureHigh, f.temperatureLow) -}}
     <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
   </h2>
+  {% if f.precipProbability %}  
   <h2 class="datapoint-precip col-2">
     {{ '%d%%' % (f.precipProbability * 100) -}}
   </h2>
+  {% endif %}
 </div>
 {% endfor %}
 

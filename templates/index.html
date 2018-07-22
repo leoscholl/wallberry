@@ -13,6 +13,7 @@
 
         $('#currently').load('currently');
         $('#alerts').load('alerts');
+        $('#sensors').load('sensors');
         $('#daily-list').load('daily');
         
         $.getJSON('precipitation', function(data){
@@ -21,8 +22,9 @@
             $('#hourly-graph').attr('src', 'hourly?type=graph&w=' + w + '&t=' + Math.random());
             $('#hourly-list').html('');
           } else {
+            var h = $(window).height() - $('#currently').height() - $('#daily-list').height();
             $('#hourly-graph').attr('src', 'static/blank.png');
-            $('#hourly-list').load('hourly?type=list');
+            $('#hourly-list').load('hourly?type=list&h=' + h);
           }
 
         });
@@ -58,6 +60,7 @@
             <div id="clock" class="col-12"></div>
             <br/>
             <div id="alerts" class="col-10 col-xl-8 offset-2 offset-xl-4"></div>
+            <div id="sensors" class="col-12"></div>
           </div>
         </div>
       </div>

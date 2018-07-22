@@ -7,14 +7,6 @@
     alt="{{ currently.icon }}"/>
   <div class="currently current-description">
     {{ currently.summary }} 
-    {% for s in sensors %}
-      {{'%s: %g' % (s, sensors[s]['temperature']) -}} 
-        <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small> 
-      {% if sensors[s]['humidity'] %}
-        / {{ '%g' % (sensors[s]['humidity']) -}}
-        <small class="text-muted align-text-top degrees">%</small>.
-      {% endif %}
-    {% endfor %}   
     {{ daily.summary }}
   </div>
 

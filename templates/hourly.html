@@ -2,7 +2,7 @@
 <div class="row hourly">
   <img class="datapoint" src="{{ url_for('static', filename=f.icon+'.png') }}"
      alt="{{ f.icon }}" />
-  <div>
+  <div class="datapoint-info">
     <div class="datapoint-time">
       {{ (f.time + offset).strftime('%-I:%M%P') }}
     </div>
