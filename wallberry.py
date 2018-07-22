@@ -137,8 +137,9 @@ def hourly():
         return hourly_graph(start, end, width)
     elif fType == 'list':
         start = datetime.now()
-        h = 69
-        end = start + timedelta(hours=int(request.args['h'])/h-1)
+        margin = 40
+        h = 79
+        end = start + timedelta(hours=(int(request.args['h']) - margin)/h)
         return hourly_list(start, end)
     else:
         return 'Error'
