@@ -7,8 +7,10 @@ from matplotlib.patches import Rectangle
 import matplotlib.dates as mdates
 import configparser
 import os
+import time
 import io
 from flask import Flask, request, render_template, send_from_directory, make_response, jsonify
+from threading import Thread
 
 app = Flask(__name__)
 configLoc = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
@@ -34,6 +36,13 @@ def dispUnit(measurement):
         else:
             return u'\u00b0' + 'C' 
 
+def formatTime(value, format='small'):
+    if format == 'small':
+        format = "%H:%M"
+    return datetime.strftime(value, format)
+
+app.jinja_env.filters['time'] = formatTime
+
 def updateForecast():
     global forecast
     if forecast == None or (forecast.currently().time + timedelta(hours=forecast.offset()) < \
@@ -48,7 +57,7 @@ def updateForecast():
 def read_sensors():
     # Remove any old sensor readings
     global sensors
-    for s in sensors:
+    for s in sensors.keys():
         if 'time' in sensors[s] and sensors[s]['time'] < \
             datetime.now() - timedelta(minutes=int(config['API']['update-freq'])):
             sensors.pop(s, None)
@@ -56,6 +65,7 @@ def read_sensors():
         sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 
             config['Sensors'][hwid])
         sensors[hwid] = {}
+        sensors[hwid]['time'] = datetime.now()
         if config['API']['units'] == 'us':
             sensors[hwid]['temperature'] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
         else:
@@ -65,7 +75,7 @@ def read_sensors():
 def wall_clock():
     return render_template('index.html',
         precipThreshold=float(config['Display']['graph-rain-threshold']),
-	updateFreq=int(config['Display']['display-freq']))
+	      updateFreq=int(config['Display']['display-freq']))
 
 @app.route('/precipitation')
 def precipChance():
@@ -86,13 +96,25 @@ def precipChance():
 
 @app.route('/log', methods=['POST'])
 def log_temperature():
+    global sensors
     name = request.form['name']
     sensors[name] = {}
     sensors[name]['time'] = datetime.now()
     sensors[name]['temperature'] = float(request.form['temperature'])
     if 'humidity' in request.form:
         sensors[name]['humidity'] = float(request.form['humidity'])
+    if 'pressure' in request.form:
+        sensors[name]['pressure'] = float(request.form['pressure'])
     return 'ok\r\n'
+
+@app.route('/history')
+def history():
+    if not 'days' in request.args:
+        return render_template('history.html',
+            updateFreq=int(config['Display']['display-freq']))
+    log = readSensorLog(datetime.now() - timedelta(hours=request.args['days']))
+    width = request.args['width']
+    return history_graph(log, width)
 
 @app.route('/currently')
 def currently():
@@ -137,10 +159,10 @@ def hourly():
         return hourly_graph(start, end, width)
     elif fType == 'list':
         start = datetime.now()
-        margin = 40
-        h = 79
-        end = start + timedelta(hours=(int(request.args['h']) - margin)/h)
-        return hourly_list(start, end)
+        margin = 60
+        h = 69
+        num = (int(request.args['h']) - margin)/h - 1
+        return hourly_list(start, num)
     else:
         return 'Error'
 
@@ -164,6 +186,28 @@ def daily():
         data=data,
         offset=offset,
         unit=dispUnit('temperature'))
+
+def history_graph(log, width):
+    dpi = 100
+    figsize = (width / dpi, 0.3 * width / dpi)
+    fg = '#cccccc'
+    bg = '#000000'
+    fig = Figure(figsize=figsize, dpi=dpi, facecolor=bg, frameon=False)
+
+    taxis = fig.add_axes((0.08, 0.1, 0.84, 0.8), facecolor=bg)
+    for sensor in log:
+        taxis.plot(log[sensor]['time'], log[sensor]['temperature'], color=fg)
+    taxis.set_ylabel('Temp (%s)' % dispUnit('temperature'), color=fg)
+    taxis.xaxis.set_tick_params(color=fg, labelcolor=fg)
+    taxis.yaxis.set_tick_params(color=fg, labelcolor=fg)
+
+    canvas = FigureCanvas(fig)
+    output = io.BytesIO()
+    canvas.print_png(output)
+
+    response = make_response(output.getvalue())
+    response.mimetype = 'image/png'
+    return response
 
 def hourly_graph(start, end, width):
     offset = timedelta(hours=forecast.offset())
@@ -257,7 +301,7 @@ def hourly_graph(start, end, width):
     response.mimetype = 'image/png'
     return response
 
-def hourly_list(start, end):
+def hourly_list(start, num):
     offset = timedelta(hours=forecast.offset())
     day = 0
     hour = 0
@@ -279,23 +323,26 @@ def hourly_list(start, end):
             'summary' : 'Sunset',
             'time' : df.sunsetTime}
         data.append(ss)
-
-    while hf.time + offset < end:
-        if hf.time + offset > start and \
-            hf.time + offset < end:
+    
+    items = 0
+    while items < num:
+        if hf.time + offset > start:
             data.append(hf)
-            if df.sunriseTime > hf.time and \
+            items += 1
+            if  items < num and df.sunriseTime > hf.time and \
                 df.sunriseTime < hf.time + timedelta(hours=1):
                 sr = {'icon' : 'sunrise',
                     'summary' : 'Sunrise',
                     'time' : df.sunriseTime}
                 data.append(sr)
-            elif df.sunsetTime > hf.time and \
+                items += 1
+            elif items < num and df.sunsetTime > hf.time and \
                 df.sunsetTime < hf.time + timedelta(hours=1):
                 ss = {'icon' : 'sunset',
                     'summary' : 'Sunset',
                     'time' : df.sunsetTime}
                 data.append(ss)
+                items += 1
         hour += 1
         hf = forecast.hourly().data[hour]
         if hf.time >= forecast.daily().data[day + 1].time:
@@ -308,8 +355,43 @@ def hourly_list(start, end):
         unit=dispUnit('temperature'))
 
 
+def readSensorLog(date=None):
+    fileName = "logs/" + str(datetime.strftime("%m_%d_%y_", date)+ "sensors.txt")
+    log = {}
+    if not os.path.exists(fileName):
+        return log
+    with open(fileName, "r") as f:
+        all_lines = f.readlines()
+    for line in all_lines:
+        split = line.split(',')
+        if not split[0] in log:
+            log[split[0]] = {}
+            log[split[0]]['time'] = []
+            log[split[0]]['temperature'] = []
+        log[split[0]]['time'].append(datetime.strptime(split[1],"%H:%M"))
+        log[split[0]]['temperature'].append(float(split[2]))
+    return log
+
+def logThread():
+    while True:
+        time.sleep(15*60)
+        print("Logging sensor values...")
+        fileName = "logs/" + str(time.strftime("%m_%d_%y_")+ "sensors.txt")
+        if os.path.exists(fileName):
+            f = open(fileName, "a")
+        else:
+            f = open(fileName, "a+")
+        global sensors
+        for s in sensors:
+            f.write(s + "," + time.strftime("%H:%M") + "," + 
+                str(round(sensors[s]['temperature'])) + "\n")
+        f.close()
+
 if __name__ == '__main__':
+    logWorker = Thread(target=logThread)
+    logWorker.start()
     app.run('0.0.0.0', debug=True)
+    
 
 
 

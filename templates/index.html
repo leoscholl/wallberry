@@ -11,20 +11,25 @@
     <script type="text/javascript">
       function update_weather(){
 
-        $('#currently').load('currently');
+        var current = $('#currently').load('currently');
+        var daily = $('#daily-list').load('daily');
         $('#alerts').load('alerts');
-        $('#sensors').load('sensors');
-        $('#daily-list').load('daily');
         
         $.getJSON('precipitation', function(data){
           if (data > {{- precipThreshold -}}) {
             var w = $(window).width();
             $('#hourly-graph').attr('src', 'hourly?type=graph&w=' + w + '&t=' + Math.random());
             $('#hourly-list').html('');
+            $('#sensors').html('');
+            $('#sensors-alt').load('sensors');
           } else {
             var h = $(window).height() - $('#currently').height() - $('#daily-list').height();
             $('#hourly-graph').attr('src', 'static/blank.png');
-            $('#hourly-list').load('hourly?type=list&h=' + h);
+            $('#sensors').load('sensors');
+            $('#sensors-alt').html('');
+            $.when(current, daily).done(function() {
+              $('#hourly-list').load('hourly?type=list&h=' + h);
+            });
           }
 
         });
@@ -69,6 +74,7 @@
       </div>
       <div class="row" id="bottom">
         <div id="daily-list" class="col-5 col-xl-6"></div>
+        <div id="sensors-alt" class="col-7 col-lg-6 offset-lg-1 col-xl-5 offset-xl-1"></div>
       </div>
     </div>
   </body>
