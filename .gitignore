@@ -1,8 +1,21 @@
+venv/
+
 # Ignore pycache files
+*.pyc
 __pycache__/*
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info
+
 # Ignore emacs autosave files
 *~
 # Ignore configparser files
 .#*
 # Ignore actual config file
-config.ini
+config.py

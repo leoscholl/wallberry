@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{{- url_for('static', filename='bootstrap.min.css') -}}">
+    <script src="http://code.jquery.com/jquery-latest.min.js"
+      type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" 
+      href="{{- url_for('static', filename='style.css') -}}">
+    <script type="text/javascript">
+      function radiotoggle(bt){
+        bt.parent().toggleClass("active");
+        bt.prop("checked", !bt.prop("checked"));
+      }
+      $(document).ready(function(){
+        radiotoggle($('#{% if status %}on{% else %}off{% endif %}'));
+        
+        $('#{% if status %}off{% else %}on{% endif %}').click(function(){
+          $('#status').prop('value', {% if status %}0{% else %}1{% endif %});
+          $('#settemp').prop('value', {{ settemp }});
+          $('#form').submit();
+        });
+
+        $('#up').click(function(){
+          $('#status').prop('value', {{ status }});
+          $('#settemp').prop('value', {{ settemp + 1 }});
+          $('#form').submit();
+        });
+
+        $('#down').click(function(){
+          $('#status').prop('value', {{ status }});
+          $('#settemp').prop('value', {{ settemp - 1 }});
+          $('#form').submit();
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <form action="" method="post" id="form">
+      <input type="hidden" id="status" name="status" value=""/>
+      <input type="hidden" id="settemp" name="settemp" value=""/>
+    </form>
+    <div class="container-fluid">
+
+      <br>
+      <div class="row justify-content-center">
+        <button type="button" class="btn btn-lg" id="up" style="background-image: url(
+          {{- url_for('static', filename='up-arrow.svg') -}});background-size:100% 100%"\>
+          <span class="sr-only">Up</span> .
+        </button>
+      </div>
+      <div class="row justify-content-center">
+        <h1>
+          {{- settemp | tempfmt -}}
+          <small class="text-muted align-text-top degrees">{{- TEMP_UNIT -}}</small>
+        </h1>
+      </div>
+      <div class="row justify-content-center">
+        <button type="button" class="btn btn-lg" id="down" style="background-image: url(
+          {{- url_for('static', filename='down-arrow.svg') -}});background-size:100% 100%"\>
+          <span class="sr-only">Down</span>.
+        </button>
+      </div>
+      <br>
+
+      <div class="row justify-content-center">
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <label class="btn btn-secondary">
+            <input type="radio" name="options" id="on" autocomplete="off">On
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" name="options" id="off" autocomplete="off">Off
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
+
