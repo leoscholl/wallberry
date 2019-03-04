@@ -59,11 +59,11 @@ Send temperature, humidity, and pressure data to the server with a POST requst t
   name: <My Sensor Name>,
   temperature: <Temp>, (optional)
   humidity: <Humidity>, (optional)
-  pressure: <Pressure>
+  pressure: <Pressure> (optional)
 }
 ```
 
-If you have DS18B20 temperature sensors, you can set them up in one of two ways on a rpi:
+An example script `weatherPOST.py` is included for reference using a DS18B20 sensor. To set up this sensor on a rpi:
 
 #### Normal mode:
 Connect Vdd to 3.3v, data to gpio-4, ground to ground, pullup resistor between Vdd and data
@@ -94,3 +94,4 @@ w1-gpio
 w1-therm strong_pullup=2
 ```
 
+Call `w1thermsensor ls` to list the hardware addresses of all connected sensors
