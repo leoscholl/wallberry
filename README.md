@@ -2,14 +2,14 @@
 
 A simple, extensible web server for fetching weather and other information and displaying nicely on a screen.
 
-![example image](https://github.com/leoscholl/wallberry/blob/master/2018-06-26-155531_1050x1680_scrot.png)
+![example image](https://github.com/leoscholl/wallberry/blob/master/scrot.png)
 
 ## Dependencies
 
-* w1thermsensor
 * forecastio
 * python-flask
 * matplotlib
+* w1thermsensor (optional)
 
 ## Hardware
 
@@ -27,9 +27,43 @@ sudo pip3 install python-forecastio
 ```
 
 Requires a DarkSky API key (free from https://darksky.net/dev). 
-Change the example config file to include your key and your location. Add addresses of any DS18B20 sensors attached through w1-gpio. Save config file as `config.ini`
+Change the example config file to include your key and your location. Save config file as `config.py`
 
-If you have temperature sensors, you can set them up in one of two ways:
+## Usage
+
+Start the server on your local network by running `sh wallberry/server.sh &`
+Open a web browser and navigate to `localhost:5000`
+
+For a wall-clock, use crontab and screen to automatically start on boot
+
+```
+sudo apt-get install screen
+crontab -e
+```
+add the following:
+```
+@reboot /usr/bin/screen -dmS Server /bin/sh ~/wallberry/server.sh
+@reboot /bin/sh ~/wallberry/start.sh
+0 7 * * * /bin/sh ~/wallberry/stop.sh
+0 23 * * * /bin/sh ~/wallberry/start.sh
+```
+This will start a full-screen kiosk browser, and turn off the screen automatically from 11pm to 7am.
+
+Included also is an example python script for a PIR motion sensor for automatically turning on and off the screen
+
+## Adding sensors
+
+Send temperature, humidity, and pressure data to the server with a POST requst to `/log` with the format
+```
+{
+  name: <My Sensor Name>,
+  temperature: <Temp>, (optional)
+  humidity: <Humidity>, (optional)
+  pressure: <Pressure>
+}
+```
+
+If you have DS18B20 temperature sensors, you can set them up in one of two ways on a rpi:
 
 #### Normal mode:
 Connect Vdd to 3.3v, data to gpio-4, ground to ground, pullup resistor between Vdd and data
@@ -60,22 +94,3 @@ w1-gpio
 w1-therm strong_pullup=2
 ```
 
-## Usage
-
-Start the server on your local network by running `python3 wallberry/wallberry.py &`
-Open a web browser and navigate to `localhost:5000`
-
-For a wall-clock, use crontab and screen to automatically start on boot
-
-```
-sudo apt-get install screen
-crontab -e
-```
-add the following:
-```
-@reboot /usr/bin/screen -dmS Clock /usr/bin/python3 /path/to/wallberry/wallberry.py
-@reboot /bin/sh ~/wallberry/start.sh
-0 7 * * * /bin/sh ~/wallberry/stop.sh
-0 23 * * * /bin/sh ~/wallberry/start.sh
-```
-This will start a full-screen kiosk browser, and turn off the screen automatically from 11pm to 7am.
