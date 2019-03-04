@@ -44,8 +44,8 @@ add the following:
 ```
 @reboot /usr/bin/screen -dmS Server /bin/sh ~/wallberry/server.sh
 @reboot /bin/sh ~/wallberry/start.sh
-0 7 * * * /bin/sh ~/wallberry/stop.sh
-0 23 * * * /bin/sh ~/wallberry/start.sh
+0 7 * * * /bin/sh ~/wallberry/start.sh
+0 23 * * * /bin/sh ~/wallberry/stop.sh
 ```
 This will start a full-screen kiosk browser, and turn off the screen automatically from 11pm to 7am.
 
