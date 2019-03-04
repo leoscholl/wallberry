@@ -114,7 +114,9 @@ def allReadings(db, table, start=None, end=None):
             readings[sensors[i]['name']]['value'].append(value)
     return readings
 
-def latestReadings(db, table, minutes=60):
+def latestReadings(db, table, minutes=None):
+    if minutes == None:
+        minutes = app.config['SENSOR_BLIND_MINUTES']
     sensors = db.execute(
         'SELECT name, id FROM sensor'
     ).fetchall()
