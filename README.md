@@ -1,6 +1,6 @@
 ## Synopsis
 
-A simple, extensible web server for fetching weather and other information and displaying nicely on a screen.
+A simple, extensible web server for fetching and logging weather information and displaying nicely on a screen.
 
 ![example image](https://github.com/leoscholl/wallberry/blob/master/scrot.png)
 
@@ -18,12 +18,11 @@ A simple, extensible web server for fetching weather and other information and d
 
 ## Setup
 
-Install:
-
+Install with pip and virtualenv:
 ```
-git clone https://github.com/leoscholl/wallberry
-sudo apt-get install python3-flask python3-matplotlib python3-w1thermsensor
-sudo pip3 install python-forecastio
+python3 -m virtualenv ~/wallberry
+source ~/wallberry/bin/activate
+pip install wallberry
 ```
 
 Requires a DarkSky API key (free from https://darksky.net/dev). 
