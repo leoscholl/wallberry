@@ -1,0 +1,4 @@
+include wallberry/schema.sql
+graft wallberry/static
+graft wallberry/templates
+global-exclude *.pyc

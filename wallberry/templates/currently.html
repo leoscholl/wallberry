@@ -1,6 +1,6 @@
   <h1 class="current-temperature">
-    {{ '%d' % currently.temperature -}}
-    <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
+    {{ currently.temperature | tempfmt -}}
+    <small class="text-muted align-text-top degrees">{{- TEMP_UNIT }}</small>
   </h1>
   <img class="currently" 
     src="{{ url_for('static', filename=currently.icon+'.png') }}"
