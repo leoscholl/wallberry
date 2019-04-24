@@ -22,7 +22,7 @@ Install with pip and virtualenv:
 ```
 python3 -m virtualenv ~/wallberry
 source ~/wallberry/bin/activate
-pip install wallberry
+pip install wallberry-uberpotato
 ```
 
 Requires a DarkSky API key (free from https://darksky.net/dev). 
