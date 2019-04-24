@@ -94,3 +94,9 @@ w1-therm strong_pullup=2
 ```
 
 Call `w1thermsensor ls` to list the hardware addresses of all connected sensors
+
+## Viewing log history
+
+![example log output](https://github.com/leoscholl/wallberry/blob/master/graph.png)
+
+A GET request to `/log` yields a date range selection and simple graph
