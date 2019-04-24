@@ -1,0 +1,8 @@
+<dl class="row sensors text-right">
+  {% for r in readings %}
+    <dt class="col-8">{{- r['name'] -}}:</dt>
+    <dd class="col-4">{{ r['value'] | tempfmt -}}
+      <small class="text-muted align-text-top degrees">{{- TEMP_UNIT }}</small> 
+    </dd>
+  {% endfor %}   
+</dl>

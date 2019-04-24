@@ -6,6 +6,6 @@
   {% elif a.severity and a.severity == "warning" %}
   <div class="alert alert-danger" role="alert">
   {% endif %}
-  {{ a.title }}
+  <b>{{ a.title }}</b> {{ a.time | datefmt('full') }} - {{ a.expires | datefmt('full') }}
   </div>
 {% endfor %}

@@ -3,30 +3,34 @@
   <head>
     <link rel="stylesheet" href="{{- url_for('static', filename='bootstrap.min.css') -}}">
     <script src="http://code.jquery.com/jquery-latest.min.js"
-        type="text/javascript"></script>
+      type="text/javascript"></script>
     <script src="{{- url_for('static', filename='moment.min.js') -}}" 
-        type="text/javascript"></script>
+      type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" 
-        href="{{- url_for('static', filename='style.css') -}}">
+      href="{{- url_for('static', filename='style.css') -}}">
     <script type="text/javascript">
       function update_weather(){
 
-        $('#currently').load('currently');
-        $('#alerts').load('alerts');
-        $('#sensors').load('sensors');
-        $('#daily-list').load('daily');
-        
-        $.getJSON('precipitation', function(data){
-          if (data > {{- precipThreshold -}}) {
-            var w = $(window).width();
-            $('#hourly-graph').attr('src', 'hourly?type=graph&w=' + w + '&t=' + Math.random());
-            $('#hourly-list').html('');
-          } else {
-            var h = $(window).height() - $('#currently').height() - $('#daily-list').height();
-            $('#hourly-graph').attr('src', 'static/blank.png');
-            $('#hourly-list').load('hourly?type=list&h=' + h);
-          }
-
+        $('#currently').load('forecast/currently', function(){
+          $('#daily-list').load('forecast/daily', function(){
+            $('#alerts').load('forecast/alerts', function(){
+              $.getJSON('forecast/precipitation', function(data){
+                if (data > {{- precipThreshold -}}) {
+                  var w = $(window).width();
+                  $('#hourly-graph').attr('src', 'forecast/graph?&width=' + w + '&t=' + Math.random());
+                  $('#hourly-list').html('');
+                  $('#sensors').html('');
+                  $('#sensors-alt').load('log/temperature');
+                } else {
+                  var h = $(window).height() - $('#currently').height() - $('#daily-list').height();
+                  $('#hourly-graph').attr('src', 'static/blank.png');
+                  $('#sensors').load('log/temperature');
+                  $('#sensors-alt').html('');
+                  $('#hourly-list').load('forecast/hourly?h=' + h);
+                }
+              });
+            });
+          });
         });
         
       }
@@ -68,7 +72,9 @@
         <img id="hourly-graph" src="" class="col-12"/>
       </div>
       <div class="row" id="bottom">
-        <div id="daily-list" class="col-5 col-xl-6"></div>
+        <div id="daily-list" class="col-12 col-lg-5 col-xl-6"></div>
+        <div id="sensors-alt" class="col-12 col-lg-6 offset-lg-1 col-xl-5 offset-xl-1">
+        </div>
       </div>
     </div>
   </body>

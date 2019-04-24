@@ -61,7 +61,7 @@ img.datapoint {
 }
 
 .hourly .datapoint-info {
-    max-width: 210px;
+    max-width: 60%;
 }
 
 .datapoint-time {
@@ -76,7 +76,7 @@ img.datapoint {
 .hourly .datapoint-temperature {
     font-size: 40pt;
     position: absolute;
-    margin-left: 300px;
+    margin-left: 70%;
     margin-top: 10px;
 }
 
@@ -84,12 +84,13 @@ img.datapoint {
     font-size: 40pt;
     color: #4082f2;
     position: absolute;
-    margin-left: 420px;
+    margin-left: 70%;
+    padding-left: 120px;
     margin-top: 10px;
 }
 
 .daily .datapoint-info {
-    max-width: 350px;
+    max-width: 70%;
 }
 
 .daily .datapoint-temperature {

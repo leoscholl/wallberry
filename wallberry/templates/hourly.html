@@ -4,7 +4,7 @@
      alt="{{ f.icon }}" />
   <div class="datapoint-info">
     <div class="datapoint-time">
-      {{ (f.time + offset).strftime('%-I:%M%P') }}
+      {{ (f.time + offset) | datefmt('time') }}
     </div>
     <div class="datapoint-description text-muted">
       {{ f.summary }}
@@ -12,8 +12,8 @@
   </div>
   {% if f.temperature %}
   <h2 class="datapoint-temperature">
-   {{ '%d' % f.temperature -}}
-    <small class="text-muted align-text-top degrees">{{- '%s' % unit }}</small>
+   {{ f.temperature | tempfmt -}}
+    <small class="text-muted align-text-top degrees">{{- '%s' % TEMP_UNIT }}</small>
   </h2>
   {% endif %}
   {% if f.precipProbability and (f.precipProbability // 0.1) > 0 %}
