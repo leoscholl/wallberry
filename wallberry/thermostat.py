@@ -1,5 +1,6 @@
-from datetime import timedelta, datetime, timezone
+from datetime import datetime
 from flask import Blueprint, request, render_template, jsonify
+from flask import current_app as app
 from wallberry.db import get_db
 
 bp = Blueprint('thermostat', __name__, url_prefix='/thermostat') 
@@ -15,6 +16,7 @@ def thermostat():
         db.execute(
         'REPLACE INTO thermostat (setting, value) VALUES (?, ?)', ('settemp', int(settemp)))
         db.commit()
+
     status = db.execute('SELECT value FROM thermostat WHERE setting = "status"').fetchone()
     settemp = \
         db.execute('SELECT value FROM thermostat WHERE setting = "settemp"').fetchone()
@@ -27,7 +29,7 @@ def thermostat():
     else:
         settemp = int(settemp['value'])
     if 'json' in request.args:
-        return jsonify(status=status,settemp=settemp)
+        return jsonify(time=datetime.now(),status=status,settemp=settemp)
     return render_template('thermostat.html',
-        settemp=settemp, status=status)
+        settemp=settemp, status=status, updateFreq=app.config['REFRESH_PERIOD'])
 

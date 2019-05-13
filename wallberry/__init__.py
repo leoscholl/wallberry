@@ -1,6 +1,20 @@
-from datetime import datetime
+from datetime import datetime, date
 import os
 from flask import Flask, render_template
+from flask.json import JSONEncoder
+
+class CustomJSONEncoder(JSONEncoder):
+
+    def default(self, obj):
+        try:
+            if isinstance(obj, date):
+                return obj.strftime('%Y-%m-%d %H:%M:%S')
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
 
 def dateFmt(value, format='time'):
     if format == 'time':
@@ -39,6 +53,9 @@ def create_app(test_config=None):
     app.jinja_env.filters['tempfmt'] = tempFmt
     app.jinja_env.globals['TEMP_UNIT'] = u'\xb0' + \
         ('F' if app.config['UNITS'] == 'us' else 'C')
+
+    # Apply json date encoder
+    app.json_encoder = CustomJSONEncoder
 
     # Register blueprints
     from . import forecast, sensors, thermostat

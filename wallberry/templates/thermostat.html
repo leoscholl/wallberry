@@ -6,11 +6,22 @@
       type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" 
       href="{{- url_for('static', filename='style.css') -}}">
+    <style>
+      .label {
+        font-size: 25pt;
+        margin-top: -20px;
+      }
+    </style>
     <script type="text/javascript">
       function radiotoggle(bt){
         bt.parent().toggleClass("active");
         bt.prop("checked", !bt.prop("checked"));
       }
+
+      function update_sensors(){
+        $('#sensors').load('log/temperature');
+      }
+
       $(document).ready(function(){
         radiotoggle($('#{% if status %}on{% else %}off{% endif %}'));
         
@@ -31,8 +42,12 @@
           $('#settemp').prop('value', {{ settemp - 1 }});
           $('#form').submit();
         });
+        setInterval("update_sensors();", 1000 * 60 *  {{- updateFreq -}});
+        update_sensors();
       });
     </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   </head>
   <body>
     <form action="" method="post" id="form">
@@ -40,39 +55,38 @@
       <input type="hidden" id="settemp" name="settemp" value=""/>
     </form>
     <div class="container-fluid">
-
-      <br>
-      <div class="row justify-content-center">
-        <button type="button" class="btn btn-lg" id="up" style="background-image: url(
-          {{- url_for('static', filename='up-arrow.svg') -}});background-size:100% 100%"\>
-          <span class="sr-only">Up</span> .
-        </button>
-      </div>
-      <div class="row justify-content-center">
-        <h1>
-          {{- settemp | tempfmt -}}
-          <small class="text-muted align-text-top degrees">{{- TEMP_UNIT -}}</small>
-        </h1>
-      </div>
-      <div class="row justify-content-center">
-        <button type="button" class="btn btn-lg" id="down" style="background-image: url(
-          {{- url_for('static', filename='down-arrow.svg') -}});background-size:100% 100%"\>
-          <span class="sr-only">Down</span>.
-        </button>
-      </div>
-      <br>
-
-      <div class="row justify-content-center">
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn btn-secondary">
-            <input type="radio" name="options" id="on" autocomplete="off">On
-          </label>
-          <label class="btn btn-secondary">
-            <input type="radio" name="options" id="off" autocomplete="off">Off
-          </label>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col-lg">
+              <h1 class="current-temperature">
+                {{- settemp | tempfmt -}}
+                <small class="text-muted align-text-top degrees">{{- TEMP_UNIT -}}</small>
+              </h1>
+            </div>
+            <div class="col-lg">
+              <div class="label">Setpoint</div>
+              <div class="btn-group btn-group-xl" role="group">
+                <button type="button" class="btn btn-light" id="down">-</button>
+                <button type="button" class="btn btn-light" id="up">+</button>
+              </div>
+            </div>
+            <div class="col-lg">
+              <div class="btn-group btn-group-toggle btn-group-xl">
+                <label class="btn btn-secondary">
+                  <input type="radio" name="options" id="on" autocomplete="off">On
+                </label>
+                <label class="btn btn-secondary">
+                  <input type="radio" name="options" id="off" autocomplete="off">Off
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div id="sensors"></div>
         </div>
       </div>
-
     </div>
   </body>
 </html>

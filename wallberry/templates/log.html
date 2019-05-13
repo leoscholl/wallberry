@@ -11,48 +11,108 @@
     <link rel="stylesheet" type="text/css" 
       href="{{- url_for('static', filename='style.css') -}}">
     <script type="text/javascript">
-      $(document).ready(function(){
-        $('#from').datetimepicker({
-          inline:true,
-          onChangeDateTime:function(ct){
-            var w = $(window).width();
-            $('#content').attr('src', 'log/graph?&width=' + w + '&start=' + Date.parse(ct)/1000 + '&end=' + Date.parse($('#to').datetimepicker('getValue'))/1000);
-            $('#to').datetimepicker('setOptions', {
-              minDate:$('#from').val()?$('#from').val():false
-            });
-            if (ct > $('#to').datetimepicker('getValue'))
-              $('#to').datetimepicker('setOptions', {
-                value:$('#from').val()
-              });
-          }
-        });
 
-        $('#to').datetimepicker({
-          inline:true,
-          onChangeDateTime:function(ct){
-            var w = $(window).width();
-            $('#content').attr('src', 'log/graph?&width=' + w + '&end=' + Date.parse(ct)/1000 + '&start=' + Date.parse($('#from').datetimepicker('getValue'))/1000);
-          }
+      function from_changed(ct){
+        var w = $(window).width();
+        $('#to').datetimepicker('setOptions', {
+          minDate:$('#from').val()?$('#from').val():false
         });
-        from = new Date();
-        from.setDate(from.getDate() - 1);
+        if (ct > $('#to').datetimepicker('getValue'))
+          $('#to').datetimepicker('setOptions', {
+            value:$('#from').val()
+          });
+        var start = Date.parse(ct)/1000
+        var end = Date.parse($('#to').datetimepicker('getValue'))/1000
+        $('#content').attr('src', 'log/graph?&width='+w+'&start='+start+'&end='+end+'&average='+$('#daily').prop('checked').toString());
+      }
+      
+      function to_changed(ct){
+        var w = $(window).width();
+        var start = Date.parse($('#from').datetimepicker('getValue'))/1000
+        var end = Date.parse(ct)/1000 
+        $('#content').attr('src', 'log/graph?&width='+w+'&start='+start+'&end='+end+'&average='+$('#daily').prop('checked').toString());
+      }
+
+      function hourly_mode(){
+        if ($('#from').val() == "") {
+          from = new Date();
+          to = new Date();
+          from.setDate(from.getDate() - 1);
+        } else {  
+          from = new Date($('#from').val());
+          to = new Date($('#to').val());
+        }
         $('#from').datetimepicker('setOptions', {
+          datepicker: true,
+          timepicker: true,
           value:''+from.getFullYear()+'/'+(from.getMonth()+1)+'/'+from.getDate()+
             ' '+from.getHours()+':'+from.getMinutes()
         });
-        to = new Date();
         $('#to').datetimepicker('setOptions', {
+          datepicker: true,
+          timepicker: true,
           value:''+to.getFullYear()+'/'+(to.getMonth()+1)+'/'+to.getDate()+
             ' '+to.getHours()+':'+to.getMinutes(),
           minDate:$('#from').val()
         });
-        $('#to').datetimepicker('validate')
+        to_changed($('#to').val())
+        $('#daily').attr('checked', false).parent().removeClass('active')
+        $('#hourly').attr('checked', true).parent().addClass('active')
+      }
+
+      function daily_mode(){
+        from = new Date($('#from').val());
+        to = new Date($('#to').val());
+        $('#from').datetimepicker('setOptions', {
+          datepicker: true,
+          timepicker: false,
+          value:''+from.getFullYear()+'/'+(from.getMonth()+1)+'/'+from.getDate()+' 00:00'
+        });
+        $('#to').datetimepicker('setOptions', {
+          datepicker: true,
+          timepicker: false,
+          value:''+to.getFullYear()+'/'+(to.getMonth()+1)+'/'+to.getDate()+' 00:00',
+          minDate:$('#from').val()
+        });
+        to_changed($('#to').val())
+        $('#daily').attr('checked', true).parent().addClass('active')
+        $('#hourly').attr('checked', false).parent().removeClass('active')
+      }
+
+      $(document).ready(function(){
+        $('#from').datetimepicker({
+          inline:true,
+          onChangeDateTime:from_changed,
+          onChangeMonth:from_changed,
+          onChangeYear:from_changed
+        });
+        $('#to').datetimepicker({
+          inline:true,
+          onChangeDateTime:to_changed,
+          onChangeMonth:to_changed,
+          onChangeYear:to_changed
+        });
+        $('#hourly').click(hourly_mode);
+        $('#daily').click(daily_mode);
+        
+        hourly_mode();
       });
     </script>
   </head>
   <body>
     <div class="container-fluid">
 
+      <br>
+      <div class="row justify-content-center">
+        <div class="btn-group btn-group-toggle">
+          <label class="btn btn-secondary active">
+            <input type="radio" name="mode" id="hourly" checked> Hourly
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" name="mode" id="daily"> Daily average
+          </label>
+        </div>
+      </div>
       <br>
       <div class="row justify-content-center">
           <input id="from" type="text">

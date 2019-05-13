@@ -3,7 +3,6 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import rcParams as defaults
 from matplotlib.patches import Rectangle
-import matplotlib.dates as mdates
 import io
 
 
@@ -27,7 +26,13 @@ def history_graph(log, width, unit):
     taxis.set_ylabel('Temp (%s)' % unit, color=fg)
     taxis.xaxis.set_tick_params(color=fg, labelcolor=fg)
     taxis.yaxis.set_tick_params(color=fg, labelcolor=fg)
-    taxis.xaxis.set_major_formatter(mdates.DateFormatter('%-I%P'))
+
+    formatter = taxis.xaxis.get_major_formatter()
+    formatter.scaled[1./24] = '%-I%P'
+    formatter.scaled[1.0] = '%e'
+    formatter.scaled[30.] = '%b'
+    formatter.scaled[365.] = '%Y'
+    #taxis.xaxis.set_major_formatter(mdates.DateFormatter('%-I%P'))
     fig.legend(labels=log.keys())  
 
     canvas = FigureCanvas(fig)
