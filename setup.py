@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='wallberry-uberpotato',
-    version='1.2.1',
+    version='1.2.2',
     author="Leo Scholl",
     author_email="leo.scholl@gmail.com",
     description="Wall clock / weather forecast http server suitable for raspberry pi",

@@ -3,8 +3,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import rcParams as defaults
 from matplotlib.patches import Rectangle
+import matplotlib.dates as mdates
 import io
-
 
 defaults.update({'font.size':16,
     'font.family':'sans-serif',
@@ -32,7 +32,6 @@ def history_graph(log, width, unit):
     formatter.scaled[1.0] = '%e'
     formatter.scaled[30.] = '%b'
     formatter.scaled[365.] = '%Y'
-    #taxis.xaxis.set_major_formatter(mdates.DateFormatter('%-I%P'))
     fig.legend(labels=log.keys())  
 
     canvas = FigureCanvas(fig)
@@ -81,7 +80,9 @@ def hourly_graph(forecast, start, hours, width, unit):
     paxis.spines['right'].set_color(fg)
     paxis.spines['top'].set_visible(False)
 
-    paxis.xaxis.set_major_formatter(mdates.DateFormatter('%-I%P'))
+    formatter = paxis.xaxis.get_major_formatter()
+    formatter.scaled[1./24] = '%-I%P'
+    formatter.scaled[1.0] = '%e'
     paxis.set_xlim([start.replace(minute=0), end.replace(minute=0)])
 
     xticks = [start.replace(minute=0) + timedelta(hours=x) \

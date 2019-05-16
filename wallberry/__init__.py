@@ -37,9 +37,8 @@ def create_app(test_config=None):
     )
     from . import config
     app.config.from_object(config.DefaultConfig)
-    if test_config is None:
-        app.config.from_envvar('WALLBERRY_CONFIG')
-    else:
+    app.config.from_envvar('WALLBERRY_CONFIG')
+    if test_config is not None:
         app.config.from_mapping(test_config)
 
     # Ensure the instance folder exists

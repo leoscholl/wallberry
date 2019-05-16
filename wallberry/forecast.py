@@ -55,7 +55,9 @@ def hourly():
     start = datetime.now()
     margin = 60
     h = 69
-    num = (int(request.args['h']) - margin)/h - 1
+    num = 8
+    if 'h' in request.args:
+        num = (int(request.args['h']) - margin)/h - 1
     offset = timedelta(hours=forecast.offset())
     day = 0
     hour = 0
@@ -108,7 +110,9 @@ def hourly():
 
 @bp.route('/graph')
 def graph():
-    width = int(request.args['width'])
+    width = 800
+    if 'width' in request.args:
+        width = int(request.args['width'])
     start = datetime.now() - timedelta(hours=1)
     image = hourly_graph(app.forecast.get_forecast(), start, 
         app.config['GRAPH_HOURS'], width, 
