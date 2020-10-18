@@ -133,3 +133,6 @@ img.datapoint {
     margin-top: 20px;
 }
 
+#hourly-graph {
+    height: 100%;
+}
