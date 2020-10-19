@@ -80,9 +80,7 @@ def hourly_graph(forecast, start, hours, width, unit):
     paxis.spines['right'].set_color(fg)
     paxis.spines['top'].set_visible(False)
 
-    formatter = paxis.xaxis.get_major_formatter()
-    formatter.scaled[1./24] = '%-I%P'
-    formatter.scaled[1.0] = '%e'
+    paxis.xaxis.set_major_formatter(mdates.DateFormatter('%-I%P'))
     paxis.set_xlim([start.replace(minute=0), end.replace(minute=0)])
 
     xticks = [start.replace(minute=0) + timedelta(hours=x) \

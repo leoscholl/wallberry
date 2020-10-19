@@ -43,9 +43,10 @@ def alerts():
     filtered = {}
     offset = timedelta(hours=forecast.offset())
     for a in alerts: # TODO sometimes alerts contains an empty alert
-        a.time = datetime.utcfromtimestamp(a.time) + offset
-        a.expires = datetime.utcfromtimestamp(a.expires) + offset
-        filtered[a.title] = a # assume alerts are sorted by date?
+        if hasattr(a, 'time') and hasattr(a, 'expires') and hasattr(a, 'title'):
+            a.time = datetime.utcfromtimestamp(a.time) + offset
+            a.expires = datetime.utcfromtimestamp(a.expires) + offset
+            filtered[a.title] = a # assume alerts are sorted by date?
     return render_template('alerts.html',
         alerts=filtered.values())
 

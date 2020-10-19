@@ -18,12 +18,14 @@
                 if (data > {{- precipThreshold -}}) {
                   var w = $(window).width();
                   $('#hourly-graph').attr('src', 'forecast/graph?&width=' + w + '&t=' + Math.random());
+		  $('#hourly-graph').show();
                   $('#hourly-list').html('');
                   $('#sensors').html('');
                   $('#sensors-alt').load('log/temperature');
                 } else {
                   var h = $(window).height() - $('#currently').height() - $('#daily-list').height();
                   $('#hourly-graph').attr('src', 'static/blank.png');
+		  $('#hourly-graph').hide();
                   $('#sensors').load('log/temperature');
                   $('#sensors-alt').html('');
                   $('#hourly-list').load('forecast/hourly?h=' + h);
